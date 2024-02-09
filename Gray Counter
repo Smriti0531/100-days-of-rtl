@@ -1,0 +1,46 @@
+// Gray Counter Module
+module gray_counter (
+  input wire clk,
+  input wire rst,
+  output reg [3:0] gray
+);
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      gray <= 4'b0000;
+    end else begin
+      gray <= gray ^ (gray >> 1);
+    end
+  end
+
+endmodule
+
+module tb_gray_counter;
+
+  reg tb_clk;
+  reg tb_rst;
+
+  wire [3:0] tb_gray;
+
+  gray_counter uut (
+    .clk(tb_clk),
+    .rst(tb_rst),
+    .gray(tb_gray)
+  );
+
+  always #5 tb_clk = ~tb_clk;
+
+  initial begin
+    tb_clk = 0;
+    tb_rst = 1;
+
+    #10 tb_rst = 0;
+
+    #50 $finish;
+  end
+
+  always @(posedge tb_clk) begin
+    $display("Time=%t, Gray=%b", $time, tb_gray);
+  end
+
+endmodule
