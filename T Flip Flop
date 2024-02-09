@@ -1,0 +1,53 @@
+module t_flip_flop (
+  input wire clk,     
+  input wire rst,     
+  input wire t,       
+  output reg q        
+);
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      q <= 1'b0;      
+    end else begin
+      if (t) begin
+        q <= ~q;      
+      end
+    end
+  end
+
+endmodule
+
+module tb_t_flip_flop;
+
+  reg tb_clk;
+  reg tb_rst;
+  reg tb_t;
+
+  wire tb_q;
+
+  t_flip_flop uut (
+    .clk(tb_clk),
+    .rst(tb_rst),
+    .t(tb_t),
+    .q(tb_q)
+  );
+
+  always begin
+    #5 tb_clk = ~tb_clk;  
+  end
+
+  initial begin
+    tb_clk = 0;
+    tb_rst = 1;         
+    tb_t = 0;
+
+    #10 tb_rst = 0;       
+    #10 tb_t = 1;         
+    #10 tb_t = 0;          // Toggle T input
+    #10 tb_t = 1;
+    #10 tb_t = 0;
+    #10 tb_t = 1;
+
+  end
+
+endmodule
