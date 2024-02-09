@@ -1,0 +1,42 @@
+module MinorityDetector (
+  input wire [7:0] data,  
+  output reg minority     
+);
+
+  reg [7:0] ones_count;
+
+  always @* begin
+    ones_count = data[0] + data[1] + data[2] + data[3] + data[4] + data[5] + data[6] + data[7];
+ 
+    minority = (ones_count < 4) ? 1'b1 : 1'b0;
+  end
+
+endmodule
+
+
+module MinorityDetector_tb;
+
+  reg [7:0] data;   
+  wire minority;      
+
+  MinorityDetector uut (
+    .data(data),
+    .minority(minority)
+  );
+
+  initial begin
+  
+    data = 8'b00000000; 
+    #10 $display("Data: %b, Minority: %b", data, minority);
+
+    data = 8'b11000000; 
+    #10 $display("Data: %b, Minority: %b", data, minority);
+
+    data = 8'b11010000; 
+    #10 $display("Data: %b, Minority: %b", data, minority);
+
+   
+    #10 $finish;
+  end
+
+endmodule
