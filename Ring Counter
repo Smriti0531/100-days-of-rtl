@@ -1,0 +1,48 @@
+
+module ring_counter (
+  input wire clk,
+  input wire rst,
+  output reg [3:0] ring
+);
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      ring <= 4'b0001; 
+    end else begin
+      ring <= ring << 1;
+      if (ring == 4'b1000) 
+        ring <= 4'b0001;
+    end
+  end
+
+endmodule
+
+module tb_ring_counter;
+
+  reg tb_clk;
+  reg tb_rst;
+
+  wire [3:0] tb_ring;
+
+  ring_counter uut (
+    .clk(tb_clk),
+    .rst(tb_rst),
+    .ring(tb_ring)
+  );
+
+  always #5 tb_clk = ~tb_clk;
+
+  initial begin
+    tb_clk = 0;
+    tb_rst = 1;
+
+    #10 tb_rst = 0;
+
+    #50 $finish;
+  end
+
+  always @(posedge tb_clk) begin
+    $display("Time=%t, Ring=%b", $time, tb_ring);
+  end
+
+endmodule
