@@ -1,0 +1,45 @@
+module VedicMultiplier (
+  input wire [3:0] multiplicand, 
+  input wire [3:0] multiplier,   
+  output reg [7:0] product        
+);
+
+  reg [3:0] partial_products [3:0]; 
+
+  always @* begin
+
+    partial_products[0] = multiplicand * multiplier[0];
+    partial_products[1] = multiplicand * multiplier[1];
+    partial_products[2] = multiplicand * multiplier[2];
+    partial_products[3] = multiplicand * multiplier[3];
+
+    product = partial_products[0] +
+              ((partial_products[1] << 4) + (partial_products[2] << 8) + (partial_products[3] << 12));
+  end
+
+endmodule
+
+
+module VedicMultiplier_tb;
+
+  reg [3:0] multiplicand; 
+  reg [3:0] multiplier;   
+  wire [7:0] product;     
+
+  VedicMultiplier uut (
+    .multiplicand(multiplicand),
+    .multiplier(multiplier),
+    .product(product)
+  );
+
+  initial begin
+  
+    multiplicand = 4'b1010; 
+    multiplier = 4'b0011;   
+    #10 $display("Multiplicand: %b, Multiplier: %b, Product: %b", multiplicand, multiplier, product);
+
+   
+    #10 $finish;
+  end
+
+endmodule
