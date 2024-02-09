@@ -1,0 +1,45 @@
+module counter (
+  input wire clk,
+  input wire rst,
+  output reg [3:0] count
+);
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      count <= 4'b0000;
+    end else begin
+      count <= count + 1; 
+    end
+  end
+
+endmodule
+
+module tb_counter;
+
+  reg clk;
+  reg rst;
+  wire [3:0] count;
+
+  counter uut (
+    .clk(clk),
+    .rst(rst),
+    .count(count)
+  );
+
+  always begin
+    #5 clk = ~clk;
+  end
+
+  initial begin
+    clk = 0;
+    rst = 1; 
+    #10 rst = 0; 
+    repeat (20) begin
+      #5; 
+    end
+
+    $stop; 
+  end
+
+endmodule
+
