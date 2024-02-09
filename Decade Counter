@@ -1,0 +1,84 @@
+module DecadeCounter(
+  input wire clk,
+  input wire reset,
+  output reg [3:0] count
+);
+
+  parameter IDLE = 4'b0000;
+  parameter STATE_1 = 4'b0001;
+  parameter STATE_2 = 4'b0010;
+  parameter STATE_3 = 4'b0011;
+  parameter STATE_4 = 4'b0100;
+  parameter STATE_5 = 4'b0101;
+  parameter STATE_6 = 4'b0110;
+  parameter STATE_7 = 4'b0111;
+  parameter STATE_8 = 4'b1000;
+  parameter STATE_9 = 4'b1001;
+
+  reg [3:0] current_state;
+
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      current_state <= IDLE; 
+    end else begin
+      case (current_state)
+        IDLE: current_state <= STATE_1;
+        STATE_1: current_state <= STATE_2;
+        STATE_2: current_state <= STATE_3;
+        STATE_3: current_state <= STATE_4;
+        STATE_4: current_state <= STATE_5;
+        STATE_5: current_state <= STATE_6;
+        STATE_6: current_state <= STATE_7;
+        STATE_7: current_state <= STATE_8;
+        STATE_8: current_state <= STATE_9;
+        STATE_9: current_state <= IDLE;
+      endcase
+    end
+  end
+
+  always @(posedge clk or posedge reset) begin
+    if (reset) begin
+      count <= 4'b0000; 
+    end else begin
+   
+      if (current_state == STATE_9) begin
+        count <= count + 1;
+      end
+    end
+  end
+
+endmodule
+
+
+module DecadeCounter_TB;
+
+  reg clk;
+  reg reset;
+
+  wire [3:0] count;
+
+  DecadeCounter dut (
+    .clk(clk),
+    .reset(reset),
+    .count(count)
+  );
+
+  always begin
+    #5 clk = ~clk; 
+  end
+
+  initial begin
+    clk = 0;
+    reset = 1;
+
+    #10 reset = 0;
+
+    #50 reset = 1; 
+
+    $monitor("Time = %0t, Count = %b", $time, count);
+
+    #100 $finish;
+  end
+
+endmodule
+
