@@ -1,0 +1,63 @@
+module demux_1to4 (
+  input wire data_input,
+  input wire [1:0] select,
+  output reg out_0,
+  output reg out_1,
+  output reg out_2,
+  output reg out_3
+);
+
+  always @* begin
+    out_0 = (select == 2'b00) ? data_input : 1'b0;
+    out_1 = (select == 2'b01) ? data_input : 1'b0;
+    out_2 = (select == 2'b10) ? data_input : 1'b0;
+    out_3 = (select == 2'b11) ? data_input : 1'b0;
+  end
+
+endmodule
+
+module tb_demux_1to4;
+
+  parameter TIME_STEP = 10;
+
+  reg data_input;
+  reg [1:0] select;
+  wire out_0, out_1, out_2, out_3;
+
+  demux_1to4 demux_inst (
+    .data_input(data_input),
+    .select(select),
+    .out_0(out_0),
+    .out_1(out_1),
+    .out_2(out_2),
+    .out_3(out_3)
+  );
+  initial begin
+    data_input = 1'b1;
+    select = 2'b00;
+    #TIME_STEP;
+    $display("Time=%0t, data_input=%b, select=%b, out_0=%b, out_1=%b, out_2=%b, out_3=%b",
+             $time, data_input, select, out_0, out_1, out_2, out_3);
+
+    data_input = 1'b0;
+    select = 2'b01;
+    #TIME_STEP;
+    $display("Time=%0t, data_input=%b, select=%b, out_0=%b, out_1=%b, out_2=%b, out_3=%b",
+             $time, data_input, select, out_0, out_1, out_2, out_3);
+
+    data_input = 1'b1;
+    select = 2'b10;
+    #TIME_STEP;
+    $display("Time=%0t, data_input=%b, select=%b, out_0=%b, out_1=%b, out_2=%b, out_3=%b",
+             $time, data_input, select, out_0, out_1, out_2, out_3);
+
+    data_input = 1'b0;
+    select = 2'b11;
+    #TIME_STEP;
+    $display("Time=%0t, data_input=%b, select=%b, out_0=%b, out_1=%b, out_2=%b, out_3=%b",
+             $time, data_input, select, out_0, out_1, out_2, out_3);
+
+    $stop;
+  end
+
+endmodule
