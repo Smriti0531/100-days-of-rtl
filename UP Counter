@@ -1,0 +1,55 @@
+// up_counter.v
+
+module up_counter(
+  input wire clk,
+  input wire rst,
+  output reg [3:0] count
+);
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      count <= 4'b0000;
+    end else begin
+      count <= count + 1;
+    end
+  end
+
+endmodule
+
+
+
+
+module up_counter_tb;
+
+  reg clk;
+  reg rst;
+  wire [3:0] count;
+
+  up_counter uut (
+    .clk(clk),
+    .rst(rst),
+    .count(count)
+  );
+
+  always #5 clk = ~clk;
+
+  initial begin
+    clk = 0;
+    rst = 0;
+
+    #10 rst = 1;
+    #10 rst = 0;
+
+    repeat (20) begin
+      #5; 
+    end
+
+    $finish;
+  end
+
+  always @(posedge clk) begin
+    $display("Time %0t: Counter = %b", $time, count);
+  end
+
+endmodule
+
