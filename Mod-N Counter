@@ -1,0 +1,50 @@
+// Mod-N Counter Module
+module mod_n_counter (
+  input wire clk,
+  input wire rst,
+  output reg [3:0] mod_n
+);
+
+  parameter N = 16; 
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      mod_n <= 4'b0000;
+    end else begin
+      mod_n <= mod_n + 1;
+      if (mod_n == N - 1) 
+        mod_n <= 4'b0000;
+    end
+  end
+
+endmodule
+
+module tb_mod_n_counter;
+
+  reg tb_clk;
+  reg tb_rst;
+
+  wire [3:0] tb_mod_n;
+
+  mod_n_counter uut (
+    .clk(tb_clk),
+    .rst(tb_rst),
+    .mod_n(tb_mod_n)
+  );
+
+  always #5 tb_clk = ~tb_clk;
+
+  initial begin
+    tb_clk = 0;
+    tb_rst = 1;
+
+    #10 tb_rst = 0;
+
+    #50 $finish;
+  end
+
+  always @(posedge tb_clk) begin
+    $display("Time=%t, Mod-N=%b", $time, tb_mod_n);
+  end
+
+endmodule
