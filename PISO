@@ -1,0 +1,59 @@
+
+
+module piso_shift_register (
+  input wire clk,
+  input wire reset,
+  input wire [3:0] parallel_in,
+  output wire serial_out
+);
+
+  reg [3:0] shift_register;
+
+  always @(posedge clk or posedge reset) begin
+    if (reset)
+      shift_register <= 4'b0000;
+    else
+      shift_register <= {parallel_in, shift_register[3]};
+  end
+
+  assign serial_out = shift_register[0];
+
+endmodule
+
+
+// Testbench for PISO Shift Register
+
+module tb_piso_shift_register;
+
+  reg clk;
+  reg reset;
+  reg [3:0] parallel_in;
+  wire serial_out;
+
+  piso_shift_register dut (
+    .clk(clk),
+    .reset(reset),
+    .parallel_in(parallel_in),
+    .serial_out(serial_out)
+  );
+
+  always begin
+    #5 clk = ~clk;
+  end
+
+  initial begin
+    clk = 0;
+    reset = 1;
+    parallel_in = 4'b0000;
+
+    #10 reset = 0;
+
+    #10 parallel_in = 4'b1010;
+    #10 parallel_in = 4'b1100; 
+    #10 parallel_in = 4'b0110; 
+
+    #50 $finish;
+  end
+
+endmodule
+
