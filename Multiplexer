@@ -1,0 +1,49 @@
+module multiplexer_2to1 (
+  input wire a,
+  input wire b,
+  input wire select,
+  output reg result
+);
+
+  always @(a, b, select)
+    case (select)
+      0: result = a;
+      1: result = b;
+      default: result = 0; 
+    endcase
+
+endmodule
+
+
+module tb_multiplexer_2to1;
+
+  reg a, b, select;
+
+  wire result;
+
+  multiplexer_2to1 uut (
+    .a(a),
+    .b(b),
+    .select(select),
+    .result(result)
+  );
+
+ 
+  initial begin
+  
+    a = 1;
+    b = 0;
+    select = 0;
+    #10; 
+    if (result !== a) $display("Test failed for select=0");
+
+    a = 0;
+    b = 1;
+    select = 1;
+    #10;  
+    if (result !== b) $display("Test failed for select=1");
+
+    $stop;
+  end
+
+endmodule
