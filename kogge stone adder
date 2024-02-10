@@ -1,0 +1,60 @@
+module kogge_stone_adder (
+  input wire [7:0] a,
+  input wire [7:0] b,
+  output wire [7:0] sum
+);
+
+  wire [8:0] p, g, c;
+
+  genvar i, j;
+  generate
+    for (i = 0; i < 8; i = i + 1) begin : stage
+      assign p[i] = a[i] ^ b[i];
+      assign g[i] = a[i] & b[i];
+      assign c[i] = a[i] | b[i];
+      for (j = 0; j < i; j = j + 1) begin : propagate
+        assign p[i] = p[i] ^ p[j];
+        assign g[i] = g[i] | (p[j] & c[i]);
+        assign c[i] = c[i] & c[j];
+      end
+    end
+  endgenerate
+
+  assign sum[0] = p[0];
+  generate
+    for (i = 1; i < 8; i = i + 1) begin : generate_sum
+      assign sum[i] = g[i-1] ^ p[i] ^ c[i-1];
+    end
+  endgenerate
+
+  assign sum[8] = g[7] ^ c[7];
+
+endmodule
+
+
+module tb_kogge_stone_adder;
+
+  reg [7:0] a, b;
+  wire [7:0] sum;
+
+  kogge_stone_adder uut (
+    .a(a),
+    .b(b),
+    .sum(sum)
+  );
+
+  initial begin
+ 
+    a = 8'b01101100;
+    b = 8'b10111011;
+    #10 $display("Test Case 1: a = %b, b = %b, sum = %b", a, b, sum);
+
+    a = 8'b11001010;
+    b = 8'b11100101;
+    #10 $display("Test Case 2: a = %b, b = %b, sum = %b", a, b, sum);
+
+
+    $stop; 
+  end
+
+endmodule
