@@ -1,0 +1,87 @@
+module vending_machine (
+  input wire clk,
+  input wire rst,
+  input wire coin,
+  input wire [1:0] selection,
+  output reg dispense,
+  output reg [1:0] inventory
+);
+
+  parameter PRICE_ITEM1 = 2;
+  parameter PRICE_ITEM2 = 3;
+
+  reg [2:0] balance;
+
+  always @(posedge clk or posedge rst) begin
+    if (rst) begin
+      balance <= 0;
+      dispense <= 0;
+      inventory <= 2'b11; 
+    end else begin
+ 
+      if (coin) begin
+        balance <= balance + 1;
+      end
+
+      case (selection)
+        2'b00: 
+          if (balance >= PRICE_ITEM1 && inventory[0]) begin
+            dispense <= 1;
+            inventory[0] <= 0;
+            balance <= balance - PRICE_ITEM1;
+          end
+        2'b01: 
+          if (balance >= PRICE_ITEM2 && inventory[1]) begin
+            dispense <= 1;
+            inventory[1] <= 0;
+            balance <= balance - PRICE_ITEM2;
+          end
+        default:
+
+          dispense <= 0;
+      endcase
+    end
+  end
+
+endmodule
+
+
+module tb_vending_machine;
+
+  reg clk;
+  reg rst;
+  reg coin;
+  reg [1:0] selection;
+  wire dispense;
+  wire [1:0] inventory;
+
+  vending_machine uut (
+    .clk(clk),
+    .rst(rst),
+    .coin(coin),
+    .selection(selection),
+    .dispense(dispense),
+    .inventory(inventory)
+  );
+
+  always begin
+    #5 clk = ~clk;
+  end
+
+  initial begin
+    clk = 0;
+    rst = 1; 
+    coin = 0;
+    selection = 2'b00; 
+    #10 rst = 0;
+
+    coin = 1;
+    #20 coin = 0;
+    #10 selection = 2'b01; 
+    #20 coin = 1;
+    #20 coin = 0;
+
+    $stop; 
+  end
+
+endmodule
